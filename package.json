@@ -1,0 +1,30 @@
+{
+  "name": "jobscalc",
+  "version": "1.0.0",
+  "description": "O JobsCalc é uma aplicação de estimativa de cálculo para projetos freelancer, onde é possível cadastrar e excluir jobs (projetos), obtendo uma estimativa de custo de cada job. Além disso, é possível traçar o valor da hora da pessoa que estará usando o sistema",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arkanael/jobscalc.git"
+  },
+  "keywords": [
+    "javascrip",
+    "nodeJs",
+    "ejs"
+  ],
+  "author": "Luiz Guilherme Bandeira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arkanael/jobscalc/issues"
+  },
+  "homepage": "https://github.com/arkanael/jobscalc#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  }
+}
