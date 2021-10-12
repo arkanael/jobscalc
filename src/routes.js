@@ -15,12 +15,12 @@ const Profile = {
     "value-hour": 75,
   },
 
-  controllers:{
-    index(req, res){
+  controllers: {
+    index(req, res) {
       return res.render(`${views}/profile`, { profile: Profile.data });
     },
 
-    update(req, res){
+    update(req, res) {
       //definir quantas semanas tem no anos
       //remover as semanas de ferias de ano
       //quantas horas por semana estou trabalhando
@@ -28,19 +28,41 @@ const Profile = {
 
       //req.body para pegar os dados.
       const data = req.body;
-      
+
       //definir quantas semanas tem um ano: 52
       const weeksPerYear = 52;
 
       //Remover as semanas de ferias de ano, para pegar quantas semanas tem em 1 mês
-      const weeksPerMonth = 52 / 12
+      const weeksPerMonth = (weeksPerYear - data["vacation-per-year"]) / 12;
 
-    }
-  }
+      //Quantas horas trabalhada na semana
+      const weekTotalHours = data["hours-per-day"] * data["days-per-week"];
+
+      //horas trabalhadas no mês
+      const monthlyTotalHours = weekTotalHours * weeksPerMonth;
+
+      //Valor da hora
+
+      data["value-hour"] = data["monthly-budget"] / monthlyTotalHours;
+
+      Profile.data = data;
+
+      //ou
+      // const valueHour = data["value-hour"] = data["monthly-budget"] / monthlyTotalHours;
+      // Profile.data={
+      //   ...Profile.data,
+      //   ...req.body,
+      //   "value-hour" : valueHour,
+      // }
+
+      return res.redirect('/profile');
+
+    },
+  },
 };
 
 const Job = {
-  data:  [
+  data: [
     {
       id: 1,
       name: "Pizzaria Pizza Boa",
@@ -54,32 +76,32 @@ const Job = {
       "daily-hours": 3,
       "total-hours": 47,
       created_at: Date.now(),
-    }
+    },
   ],
 
-  contollers:{
-    index(req, res){
-        const updatedJobs = Job.data.map((job) => {
-          const remaining = Job.services.remainingDays(job);
-      
-          const status = remaining <= 0 ? "done" : "progress";
-      
-          return {
-            ...job,
-            remaining,
-            status,
-            budget: Profile.data["value-hour"] * Job.data["total-hours"],
-          };
-        });
-      
-        return res.render(`${views}/index`, { jobs: updatedJobs });
+  contollers: {
+    index(req, res) {
+      const updatedJobs = Job.data.map((job) => {
+        
+        const remaining = Job.services.remainingDays(job);
+        const status = remaining <= 0 ? "done" : "progress";
+
+        return {
+          ...job,
+          remaining,
+          status,
+          budget: Profile.data["value-hour"] * Job.data["total-hours"],
+        };
+      });
+
+      return res.render(`${views}/index`, { jobs: updatedJobs });
     },
 
-    create(req, res){
-      return res.render(`${views}/job`)
+    create(req, res) {
+      return res.render(`${views}/job`);
     },
 
-    save(req, res){
+    save(req, res) {
       const lastId = Job.data[Job.data.length - 1]?.id || 1;
 
       Job.data.push({
@@ -91,29 +113,28 @@ const Job = {
       });
 
       return res.redirect("/");
-    }
+    },
   },
 
   services: {
     remainingDays(job) {
       const remainingDays = (job["total-hours"] / job["daily-hours"]).toFixed();
-    
+
       const createdDate = new Date(job.created_at);
       const dueDay = createdDate.getDate() + Number(remainingDays);
       const dueDateInMs = createdDate.setDate(dueDay);
-    
+
       const timeDiffInMs = dueDateInMs - Date.now();
-    
+
       //Transformando milisec em dias
       const dayInMs = 1000 * 60 * 60 * 24;
       const dayDiff = Math.floor(timeDiffInMs / dayInMs);
-    
+
       //restam x dias
       return dayDiff;
-    }
-  }
-
-}
+    },
+  },
+};
 
 //rota para abrir o index
 routes.get("/", Job.contollers.index);
@@ -130,6 +151,6 @@ routes.post("/job", Job.contollers.save);
 
 //rota para abrir o profile
 routes.get("/profile", Profile.controllers.index);
-routes.post("/profile", Profile.controllers.index);
+routes.post("/profile", Profile.controllers.update);
 
 module.exports = routes;
