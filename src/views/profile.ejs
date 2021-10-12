@@ -23,22 +23,12 @@
     />
   </head>
   <body id="page-profile">
-    <header class="page-header inner">
-      <div class="container animate-up">
-        <a href="/" class="back">
-          <img src="/images/back.svg" alt="" />
-        </a>
-        <h1>Meu Perfil</h1>
-      </div>
-    </header>
+    <%- include('parts/page-header', {title: 'Meu Perfil'}) %>
 
     <div class="container animate-up delay-2">
       <aside class="card">
-        <img
-          src="https://avatars.githubusercontent.com/u/9624274?s=400&u=22c70cd109062582487e70d2eb9eb785ee3ce032&v=4"
-          alt="Luiz Guilherme Bandeira"
-        />
-        <h2>Luiz Guilherme Bandeira</h2>
+        <img src="<%= profile.avatar %> " alt="<%= profile.name %> " />
+        <h2><%= profile.name %></h2>
         <p>
           O valor da sua hora é <br />
           <strong>R$ 75,00</strong>
@@ -56,7 +46,12 @@
             <div class="input-group">
               <div class="input-wrapper">
                 <label for="name">Nome</label>
-                <input type="text" id="name" name="name" />
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value="<%= profile.name %>"
+                />
               </div>
 
               <div class="input-wrapper">
@@ -66,6 +61,7 @@
                   type="url"
                   id="avatar"
                   name="avatar"
+                  value="<%= profile.avatar %>"
                 />
               </div>
             </div>
@@ -86,6 +82,7 @@
                   id="monthly-budget"
                   name="monthly-budget"
                   placeholder="R$"
+                  value="<%= profile["monthly-budget"] %>"
                 />
               </div>
 
@@ -94,16 +91,16 @@
                   >Quantas horas <br />
                   quero trabalhar por dia?</label
                 >
-                <input type="number" id="hours-per-day" name="hours-per-day" />
+                <input type="number" id="hours-per-day" name="hours-per-day"
+                value="<%= profile["hours-per-day"] %>"/>
               </div>
             </div>
 
             <div class="input-group">
               <div class="input-wrapper">
                 <label for="days-per-week"
-                  >Quantos dias <br />quero trabalhar por semana?</label
-                >
-                <input type="number" id="days-per-week" name="days-per-week" />
+                  >Quantos dias <br />quero trabalhar por semana?</label>
+                <input type="number" id="days-per-week" name="days-per-week" value="<%= profile["days-per-week"] %>"/>
               </div>
 
               <div class="input-wrapper">
@@ -111,11 +108,9 @@
                   >Quantas semanas <br />
                   por ano você quer tirar férias?</label
                 >
-                <input
-                  type="number"
-                  id="vacation-per-year"
-                  name="vacation-per-year"
-                />
+                <input type="number" id="vacation-per-year"
+                name="vacation-per-year" value="<%= profile["vacation-per-year"]
+                %>" />
               </div>
             </div>
           </fieldset>
