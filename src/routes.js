@@ -1,7 +1,7 @@
 const express = require("express");
 const routes = express.Router();
 
-const views = `${__dirname}/views`;
+const views = `${__dirname}/views/`;
 
 const Profile = {
   data: {
@@ -55,8 +55,7 @@ const Profile = {
       //   "value-hour" : valueHour,
       // }
 
-      return res.redirect('/profile');
-
+      return res.redirect("/profile");
     },
   },
 };
@@ -82,7 +81,6 @@ const Job = {
   contollers: {
     index(req, res) {
       const updatedJobs = Job.data.map((job) => {
-        
         const remaining = Job.services.remainingDays(job);
         const status = remaining <= 0 ? "done" : "progress";
 
@@ -90,7 +88,7 @@ const Job = {
           ...job,
           remaining,
           status,
-          budget: Profile.data["value-hour"] * Job.data["total-hours"],
+          budget: job.services.calculateBuget(job, Profile.data["value-hour"]),
         };
       });
 
@@ -114,6 +112,21 @@ const Job = {
 
       return res.redirect("/");
     },
+
+    show(req, res) {
+      const jobId = req.params.id;
+    
+      const job = Job.data.find((job) => Number(job.id) === Number(jobId));
+
+      if (!job || job === undefined) {
+        return res.send("Job not found.");
+      }
+
+      job.budget = Job.services.calculateBuget(job, Profile.data["value-hour"]);
+
+      //return res.render(`${views}/job-edit, { job });
+      return res.render(views + "job-edit", { job });
+    },
   },
 
   services: {
@@ -133,6 +146,10 @@ const Job = {
       //restam x dias
       return dayDiff;
     },
+
+    calculateBuget(job, valueHour) {
+      return valueHour * job["total-hours"];
+    },
   },
 };
 
@@ -141,13 +158,10 @@ routes.get("/", Job.contollers.index);
 
 //rota para abrir o job
 routes.get("/job", Job.contollers.create);
-
-//rota para abrir o job-edit
-routes.get("/job/edit", (req, res) => {
-  return res.render(`{views}/job-edit`);
-});
-
 routes.post("/job", Job.contollers.save);
+routes.get("/job/:id", Job.contollers.show);
+
+//routes.get("/job/edit", (req, res) => res.render(views + "job-edit"));
 
 //rota para abrir o profile
 routes.get("/profile", Profile.controllers.index);
